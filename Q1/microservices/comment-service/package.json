@@ -1,0 +1,19 @@
+{
+  "name": "comment-service",
+  "version": "1.0.0",
+  "description": "Microservice for handling comments in the application.",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.1.0",
+    "mongoose": "^8.14.2",
+    "jsonwebtoken": "^9.0.2",
+    "dotenv": "^16.5.0"
+  }
+}

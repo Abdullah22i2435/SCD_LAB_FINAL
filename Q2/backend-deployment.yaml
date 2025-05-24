@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-deployment
+  namespace: dataviz-ns
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: backend
+
+      #rolling update strategy
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: backend
+        
+    spec:
+      initContainers:
+
+      #init container 
+        - name: init-backend
+          image: busybox
+          command: ['sh', '-c', 'echo "Initializing backend before main container starts"; sleep 10']
+      containers:
+        - name: backend
+          image: ismailza/mern-stack-app-backend:latest
+
+          #resources inside main container
+
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "200m"
+            limits:
+              memory: "256Mi"
+              cpu: "500m"
+
+        
+          ports:
+            - containerPort: 5173
+          volumeMounts:
+            - name: shared-logs
+              mountPath: /log/shared
+
+      #sidecar container
+        - name: log-sidecar
+          image: busybox
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "100m"
+            limits:
+              memory: "128Mi"
+              cpu: "200m"
+
+          command: ['sh', '-c', 'while true; do date >> /log/shared/app.log; sleep 5; done']
+          volumeMounts:
+            - name: shared-logs
+              mountPath: /log/shared
+      volumes:
+        - name: shared-logs
+          emptyDir: {}
+
+
+
